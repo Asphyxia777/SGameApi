@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import random
 import requests
@@ -17,7 +19,7 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
-    r_id = random.randint(1, 50)
+    r_id = random.randint(1, 60)
     r = requests.get(f"https://mmo-games.p.rapidapi.com/game?id={r_id}&rapidapi-key=02e3aad88dmsh200fff7930d9119p1a6a70jsn14ce6533a67a")
     return r.json()
 
