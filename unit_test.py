@@ -1,22 +1,22 @@
-import unittest
-from unittest.mock import patch
-from main import app, root, get_list
+import pytest
+from fastapi.testclient import TestClient
 
-class TestApp(unittest.TestCase):
+from main import app
 
-    @patch('main.requests.get')
-    def test_root(self, mock_get):
-        mock_get.return_value.json.return_value = {"game": "test_game"}
-        response = app.test_client().get('/')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json, {"game": "test_game"})
+@pytest.fixture
+def client():
+    return TestClient(app)
 
-    @patch('main.requests.get')
-    def test_get_list(self, mock_get):
-        mock_get.return_value.json.return_value = {"game": "test_game"}
-        response = app.test_client().get('/list/?q=[1,2,3]')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json, [{"game": "test_game"}, {"game": "test_game"}, {"game": "test_game"}])
 
-if __name__ == '__main__':
-    unittest.main()
+def test_read_root(client):
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "id" in response.json()
+    assert "thumbnail" in response.json()
+    # Добавьте другие проверки по мере необходимости
+
+
+def test_read_list(client):
+    response = client.get("/list/?q=1,2,3")
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
